@@ -1,0 +1,50 @@
+Teradata Parallel Transporter Version 16.20.00.02 64-Bit
+Job log: /opt/teradata/client/16.20/tbuild/logs/root-10.out
+Job id is root-10, running on TDExpress1620_Sles11
+Teradata Parallel Transporter SQL DDL Operator Version 16.20.00.02
+od_VENDOR: private log not specified
+od_VENDOR: connecting sessions
+od_VENDOR: sending SQL requests
+od_VENDOR: TPT10508: RDBMS error 3807: Object 'VENDOR_LG' does not exist.
+od_VENDOR: TPT18046: Error is ignored as requested in ErrorList
+od_VENDOR: TPT10508: RDBMS error 3807: Object 'VENDOR_ET' does not exist.
+od_VENDOR: TPT18046: Error is ignored as requested in ErrorList
+od_VENDOR: TPT10508: RDBMS error 3807: Object 'VENDOR_UV' does not exist.
+od_VENDOR: TPT18046: Error is ignored as requested in ErrorList
+od_VENDOR: disconnecting sessions
+od_VENDOR: Total processor time used = '0.092005 Second(s)'
+od_VENDOR: Start : Fri Oct 19 00:48:55 2018
+od_VENDOR: End   : Fri Oct 19 00:49:03 2018
+Job step stSetup_Tables completed successfully
+Teradata Parallel Transporter Load Operator Version 16.20.00.02
+ol_VENDOR: private log specified: load_log
+Teradata Parallel Transporter DataConnector Operator Version 16.20.00.02
+op_VENDOR[1]: Instance 1 directing private log report to 'dtacop-root-11504-1'.
+op_VENDOR[1]: DataConnector Producer operator Instances: 1
+op_VENDOR[1]: ECI operator ID: 'op_VENDOR-11504'
+op_VENDOR[1]: Operator instance 1 processing file './vendor_data'.
+ol_VENDOR: connecting sessions
+ol_VENDOR: preparing target table
+ol_VENDOR: entering Acquisition Phase
+ol_VENDOR: entering Application Phase
+ol_VENDOR: Statistics for Target Table:  'VENDOR'
+ol_VENDOR: Total Rows Sent To RDBMS:      25000
+ol_VENDOR: Total Rows Applied:            25000
+ol_VENDOR: Total Rows in Error Table 1:   0
+ol_VENDOR: Total Rows in Error Table 2:   0
+ol_VENDOR: Total Duplicate Rows:          0
+op_VENDOR[1]: Total files processed: 1.
+ol_VENDOR: disconnecting sessions
+ol_VENDOR: Performance metrics:
+ol_VENDOR:     MB/sec in Acquisition phase: 0.350
+ol_VENDOR:     Elapsed time from start to Acquisition phase:   9 second(s)
+ol_VENDOR:     Elapsed time in Acquisition phase:   4 second(s)
+ol_VENDOR:     Elapsed time in Application phase:   1 second(s)
+ol_VENDOR:     Elapsed time from Application phase to end:   2 second(s)
+ol_VENDOR: Total processor time used = '0.080004 Second(s)'
+ol_VENDOR: Start : Fri Oct 19 00:49:04 2018
+ol_VENDOR: End   : Fri Oct 19 00:49:20 2018
+Job step stLOAD_FILE_NAME completed successfully
+Job root completed successfully
+Job start: Fri Oct 19 00:48:54 2018
+Job end:   Fri Oct 19 00:49:20 2018
