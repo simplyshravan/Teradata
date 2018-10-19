@@ -1,0 +1,44 @@
+Teradata Parallel Transporter Version 16.20.00.02 64-Bit
+Job log: /opt/teradata/client/16.20/tbuild/logs/root-12.out
+Job id is root-12, running on TDExpress1620_Sles11
+Teradata Parallel Transporter SQL DDL Operator Version 16.20.00.02
+od_VENDOR: private log not specified
+od_VENDOR: connecting sessions
+od_VENDOR: sending SQL requests
+od_VENDOR: TPT10508: RDBMS error 3807: Object 'VENDOR_LG' does not exist.
+od_VENDOR: TPT18046: Error is ignored as requested in ErrorList
+od_VENDOR: TPT10508: RDBMS error 3807: Object 'VENDOR_ET' does not exist.
+od_VENDOR: TPT18046: Error is ignored as requested in ErrorList
+od_VENDOR: TPT10508: RDBMS error 3807: Object 'VENDOR_UV' does not exist.
+od_VENDOR: TPT18046: Error is ignored as requested in ErrorList
+od_VENDOR: disconnecting sessions
+od_VENDOR: Total processor time used = '0.080005 Second(s)'
+od_VENDOR: Start : Fri Oct 19 02:56:39 2018
+od_VENDOR: End   : Fri Oct 19 02:56:40 2018
+Job step stSetup_Tables completed successfully
+Teradata Parallel Transporter Load Operator Version 16.20.00.02
+ol_VENDOR: private log specified: load_log
+Teradata Parallel Transporter DataConnector Operator Version 16.20.00.02
+op_VENDOR[1]: Instance 1 directing private log report to 'dtacop-root-15521-1'.
+op_VENDOR[1]: DataConnector Producer operator Instances: 1
+op_VENDOR[1]: TPT19128 !ERROR! Attribute 'DirectoryPath' conflicts with 'FileList'
+
+op_VENDOR[1]: TPT19015 TPT Exit code set to 12.
+ol_VENDOR: connecting sessions
+ol_VENDOR: preparing target table
+ol_VENDOR: TPT10508: RDBMS error 2636: vendor must be empty for Fast Loading.
+op_VENDOR[1]: Total files processed: 0.
+ol_VENDOR: disconnecting sessions
+ol_VENDOR: Performance metrics:
+ol_VENDOR:     MB/sec in Acquisition phase: 0
+ol_VENDOR:     Elapsed time from start to Acquisition phase:   4 second(s)
+ol_VENDOR:     Elapsed time in Acquisition phase:   0 second
+ol_VENDOR:     Elapsed time in Application phase:   0 second
+ol_VENDOR:     Elapsed time from Application phase to end: < 1 second
+ol_VENDOR: Total processor time used = '0.064004 Second(s)'
+ol_VENDOR: Start : Fri Oct 19 02:56:40 2018
+ol_VENDOR: End   : Fri Oct 19 02:56:44 2018
+Job step stLOAD_FILE_NAME terminated (status 12)
+Job root terminated (status 12)
+Job start: Fri Oct 19 02:56:38 2018
+Job end:   Fri Oct 19 02:56:44 2018

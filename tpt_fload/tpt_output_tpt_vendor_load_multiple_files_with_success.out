@@ -1,0 +1,135 @@
+TDExpress1620_Sles11:~ # bteq
+
+ Teradata BTEQ 16.20.00.05 (32-bit) for LINUX. PID: 15583
+ Copyright 1984-2018, Teradata. ALL RIGHTS RESERVED.
+ Enter your logon or BTEQ command:
+.LOGON 127.0.0.1/test
+
+.LOGON 127.0.0.1/test
+Password: 
+
+
+ *** Logon successfully completed.
+ *** Teradata Database Release is 16.20.12.01                   
+ *** Teradata Database Version is 16.20.12.01                     
+ *** Transaction Semantics are BTET.
+ *** Session Character Set Name is 'ASCII'.
+ 
+ *** Total elapsed time was 1 second.
+ 
+ BTEQ -- Enter your SQL request or BTEQ command: 
+select count(*) from vendor;
+
+select count(*) from vendor;
+
+ *** Query completed. One row found. One column returned. 
+ *** Total elapsed time was 1 second.
+
+   Count(*)
+-----------
+       9200
+
+ BTEQ -- Enter your SQL request or BTEQ command: 
+.QUIT
+
+.QUIT
+ *** You are now logged off from the DBC.
+ *** Exiting BTEQ...
+ *** RC (return code) = 0 
+TDExpress1620_Sles11:~ # ls -lrt
+total 1824
+-rw-r--r-- 1 root root    1332 Nov 23  2005 .exrc
+drwxr-xr-x 2 root root    4096 May  5  2010 bin
+drwxr-xr-x 9 root root    4096 Feb 11  2017 vmware-tools-distrib
+drwxr-xr-x 4 root root    4096 Jan 10  2018 inst-sys
+drwx------ 3 root root    4096 Jun 12 15:38 .ansible
+-rwxr-x--- 1 root root     407 Jun 19 19:51 .bashrc
+drwxr-x--- 3 root root    4096 Jun 19 19:51 adwdisk
+drwx------ 3 root root    4096 Jun 20 02:53 .gnupg
+drwxr-x--- 2 root root    4096 Jun 20 02:53 .skel
+drwx------ 3 root root    4096 Jun 20 02:53 .dbus
+-rw------- 1 root root     256 Jun 20 02:53 .pulse-cookie
+drwx------ 2 root root    4096 Jun 20 02:53 .gnome2_private
+drwxr-x--- 2 root root    4096 Jun 20 02:53 .nautilus
+drwx------ 2 root root    4096 Jun 20 02:53 Documents
+drwx------ 3 root root    4096 Jun 20 02:53 .local
+-rw------- 1 root root      16 Jun 20 02:53 .esd_auth
+drwxr-x--- 2 root root    4096 Jun 20 02:53 .gstreamer-0.10
+drwx------ 2 root root    4096 Jun 20 02:53 .pulse
+drwxr-x--- 2 root root    4096 Jun 20 06:21 .oracle_jre_usage
+drwxr-x--- 4 root root    4096 Jun 20 06:25 workspace
+drwx------ 5 root root    4096 Jun 20 06:26 .mozilla
+drwxr-x--- 2 root root    4096 Jun 20 06:27 .swt
+drwx------ 5 root root    4096 Oct 13 14:24 .gnome2
+drwx------ 4 root root    4096 Oct 18 10:30 .thumbnails
+drwxr-x--- 3 root root    4096 Oct 18 10:30 Desktop
+-rw-r----- 1 root root    6227 Oct 18 10:33 file
+drwx------ 4 root root    4096 Oct 18 10:38 .config
+-rw-r----- 1 root root    2024 Oct 18 10:41 nrefile
+-rwxrwxrwx 1 root root     233 Oct 18 23:59 myfile
+-rw-r----- 1 root root 1241186 Oct 19 00:00 vendor_data
+-rw-r----- 1 root root    1778 Oct 19 00:48 tpt_vendor.tpt
+-rw------- 1 root root    2738 Oct 19 01:26 .bash_history
+-rw------- 1 root root     275 Oct 19 02:51 .Xauthority
+-rw------- 1 root root    3024 Oct 19 02:51 .ICEauthority
+dr-x------ 2 root root       0 Oct 19 02:51 .gvfs
+drwx------ 5 root root    4096 Oct 19 02:51 .gconf
+-rw------- 1 root root    7778 Oct 19 02:52 .recently-used.xbel
+drwx------ 2 root root    4096 Oct 19 02:52 .gconfd
+-rw-r----- 1 root root    3760 Oct 19 02:54 vendor_data1
+-rw-r----- 1 root root    5101 Oct 19 02:54 vendor_data2
+-rw-r----- 1 root root  427577 Oct 19 02:55 vendor_data3
+-rw-r----- 1 root root      39 Oct 19 02:55 vendor_data_file_list
+-rw-r----- 1 root root    1881 Oct 19 02:58 tpt_vendor_load_multiple_files.tpt
+-rw------- 1 root root    5078 Oct 19 02:58 .viminfo
+TDExpress1620_Sles11:~ # cat tpt_vendor_load_multiple_files.tpt
+DEFINE JOB VENDOR_FILE_LOAD
+DESCRIPTION 'Load a Teradata table from a file'
+(
+DEFINE SCHEMA SCHEMA_VENDOR
+DESCRIPTION 'Defining schema for vendor file, it is not table'
+(
+vendor_id VARCHAR(10),
+vendor_name VARCHAR(50),
+vendor_address VARCHAR(100),
+product_id VARCHAR(20)
+);
+
+DEFINE OPERATOR op_VENDOR
+DESCRIPTION 'Defining file path, and structure to read data'
+TYPE DATACONNECTOR PRODUCER
+SCHEMA SCHEMA_VENDOR
+ATTRIBUTES
+(
+VARCHAR FileList = 'YES',
+VARCHAR FileName = 'vendor_data_file_list',
+VARCHAR Format = 'Delimited',
+VARCHAR OpenMode = 'Read',
+VARCHAR TextDelimiter =','
+);
+
+DEFINE OPERATOR od_VENDOR
+DESCRIPTION 'Defining operator to connect to database. Mailny used in creation of table or running select'
+TYPE DDL
+ATTRIBUTES
+(
+VARCHAR LogonMech = '',
+VARCHAR TdpId = '127.0.0.1',
+VARCHAR UserName = 'test',
+VARCHAR UserPassword = 'test',
+VARCHAR ErrorList = '3807'
+);
+
+DEFINE OPERATOR ol_VENDOR
+DESCRIPTION 'Defining operator for fast load utility'
+TYPE LOAD
+SCHEMA *
+ATTRIBUTES
+(
+VARCHAR LogonMech = '',
+VARCHAR PrivateLogName = 'load_log',
+VARCHAR TdpId = '127.0.0.1',
+VARCHAR UserName = 'test',
+VARCHAR UserPassword = 'test',
+VARCHAR LogTable = 'VENDOR_LG',
+VARCHAR ErrorTable1 = 'VENDOR_ET',

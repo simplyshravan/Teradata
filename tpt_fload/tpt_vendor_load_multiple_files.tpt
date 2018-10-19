@@ -1,0 +1,79 @@
+DEFINE JOB VENDOR_FILE_LOAD
+DESCRIPTION 'Load a Teradata table from a file'
+(
+DEFINE SCHEMA SCHEMA_VENDOR
+DESCRIPTION 'Defining schema for vendor file, it is not table'
+(
+vendor_id VARCHAR(10),
+vendor_name VARCHAR(50),
+vendor_address VARCHAR(100),
+product_id VARCHAR(20)
+);
+
+DEFINE OPERATOR op_VENDOR
+DESCRIPTION 'Defining file path, and structure to read data'
+TYPE DATACONNECTOR PRODUCER
+SCHEMA SCHEMA_VENDOR
+ATTRIBUTES
+(
+VARCHAR FileList = 'YES',
+VARCHAR FileName = 'vendor_data_file_list.txt',
+VARCHAR Format = 'Delimited',
+VARCHAR OpenMode = 'Read',
+VARCHAR TextDelimiter =','
+);
+
+DEFINE OPERATOR od_VENDOR
+DESCRIPTION 'Defining operator to connect to database. Mailny used in creation of table or running select'
+TYPE DDL
+ATTRIBUTES
+(
+VARCHAR LogonMech = '',
+VARCHAR TdpId = '127.0.0.1',
+VARCHAR UserName = 'test',
+VARCHAR UserPassword = 'test',
+VARCHAR ErrorList = '3807'
+);
+
+DEFINE OPERATOR ol_VENDOR
+DESCRIPTION 'Defining operator for fast load utility'
+TYPE LOAD
+SCHEMA *
+ATTRIBUTES
+(
+VARCHAR LogonMech = '',
+VARCHAR PrivateLogName = 'load_log',
+VARCHAR TdpId = '127.0.0.1',
+VARCHAR UserName = 'test',
+VARCHAR UserPassword = 'test',
+VARCHAR LogTable = 'VENDOR_LG',
+VARCHAR ErrorTable1 = 'VENDOR_ET',
+VARCHAR ErrorTable2 = 'VENDOR_UV',
+VARCHAR TargetTable = 'VENDOR'
+);
+
+STEP stSetup_Tables
+(
+APPLY
+('DROP TABLE VENDOR_LG;'),
+('DROP TABLE VENDOR_ET;'),
+('DROP TABLE VENDOR_UV;')
+/*Commenting below code for first time. If you want to load data again then uncomment this.*/
+/*('DROP TABLE VENDOR;'),
+('CREATE TABLE VENDOR(VENDOR_ID number,vendor_name  VARCHAR(50),vendor_address varchar(100),product_id number;')
+*/
+TO OPERATOR (od_VENDOR);
+);
+
+STEP stLOAD_FILE_NAME
+(
+APPLY
+('INSERT INTO VENDOR
+(vendor_id,vendor_name,vendor_address,product_id)
+VALUES
+(:vendor_id,:vendor_name,:vendor_address,:product_id);
+')
+TO OPERATOR (ol_VENDOR)
+SELECT * FROM OPERATOR(op_VENDOR);
+);
+);
