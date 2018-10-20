@@ -1,0 +1,25 @@
+    DEFINE OPERATOR Producer_File_Detail
+    TYPE DATACONNECTOR PRODUCER
+    SCHEMA Define_Vendor_Schema
+    ATTRIBUTES
+    (
+        VARCHAR DirectoryPath='./',
+        VARCHAR FileName='vendor_data_mload',
+        VARCHAR Format= 'Delimited',
+        VARCHAR OpenMode='Read',
+        VARCHAR TextDelimiter =','
+    );
+    APPLY
+    (
+       'Update  test.vendor
+        set vendor_address=:vendor_address,
+	vendor_name=:vendor_name
+        where product_id=:product_id
+	and vendor_id=:vendor_id;',
+       'INSERT INTO test.vendor(vendor_id,vendor_name,vendor_address,product_id) VALUES (:vendor_id,:vendor_name,:vendor_address,:product_id);'
+    )
+    INSERT FOR MISSING UPDATE ROWS
+    IGNORE MISSING UPDATE ROWS
+    TO OPERATOR(update_operator)
+    SELECT * FROM OPERATOR (Producer_File_Detail);
+);

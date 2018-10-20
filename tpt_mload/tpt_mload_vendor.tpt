@@ -1,0 +1,41 @@
+DEFINE JOB Import_vendor_Data
+Description 'Update data in vendor table'
+(
+DEFINE OPERATOR update_operator
+TYPE UPDATE
+SCHEMA *
+ATTRIBUTES
+(
+        VARCHAR TdPid='127.0.0.1',
+        VARCHAR UserName='test',
+        VARCHAR UserPassWord='test',
+        VARCHAR TargetTable='vendor',
+        VARCHAR LogTable='vendor_log',
+        VARCHAR DateForm='AnsiDate',
+        INTEGER MaxSessions=6
+    );
+    DEFINE SCHEMA Define_Vendor_Schema
+    (
+        vendor_id varchar(10),
+        vendor_name VARCHAR(50),
+        vendor_address VARCHAR(100),
+	product_id varchar(10)
+    );
+    DEFINE OPERATOR Producer_File_Detail
+    TYPE DATACONNECTOR PRODUCER
+    SCHEMA Define_Vendor_Schema
+    ATTRIBUTES
+    (
+        VARCHAR DirectoryPath='./',
+        VARCHAR FileName='vendor_data_mload',
+        VARCHAR Format= 'Delimited',
+        VARCHAR OpenMode='Read',
+        VARCHAR TextDelimiter =','
+    );
+    APPLY
+    (
+       'INSERT INTO test.vendor(vendor_id,vendor_name,vendor_address,product_id) VALUES (:vendor_id,:vendor_name,:vendor_address,:product_id);'
+    )
+    TO OPERATOR(update_operator)
+    SELECT * FROM OPERATOR (Producer_File_Detail);
+);
