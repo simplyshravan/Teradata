@@ -1,0 +1,41 @@
+DEFINE JOB EXPORT_VENDOR_DATA
+DESCRIPTION 'Exports vendor data to a formatted file using EXPORT'
+(
+    DEFINE OPERATOR Vendor_File_Detail
+    DESCRIPTION 'Defining a consumer operator for storing retrieved data to a file'
+    TYPE DATACONNECTOR CONSUMER
+    SCHEMA *
+    ATTRIBUTES
+    (
+        VARCHAR FileName='./vendor_formatted.out',
+        VARCHAR FORMAT= 'UNFORMATTED',
+        VARCHAR OpenMode='Write'
+    );
+    
+    DEFINE SCHEMA Define_vendor_Schema
+    DESCRIPTION 'Defining a Schema to describe the structure of the output file'
+    (
+         vendor_id number,
+         vednor_name VARCHAR(100),
+         vendor_address varchar(100),
+         product_id number
+    );
+    
+    DEFINE OPERATOR Producer_Query_Detail
+    TYPE EXPORT
+    SCHEMA Define_vendor_Schema
+    ATTRIBUTES
+    (
+       VARCHAR UserName='test',
+       VARCHAR UserPAssword='test',
+       VARCHAR SelectStmt = 'SELECT vendor_id,vendor_name,vendor_address,product_id FROM test.vendor;',
+       VARCHAR Tdpid='127.0.0.1',
+       INTEGER MaxSessions=6,
+       INTEGER minsessions=2,
+       VARCHAR DateForm='ANSIDATE'
+    );
+    
+    APPLY 
+    TO OPERATOR( Vendor_File_Detail )
+    SELECT * FROM OPERATOR( Producer_Query_Detail[2] );
+);
