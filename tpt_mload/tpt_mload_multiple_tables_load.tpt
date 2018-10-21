@@ -1,0 +1,114 @@
+DESCRIPTION 'LOAD vendor TABLEs'
+(
+
+ DEFINE OPERATOR UPDATE_OPERATOR()
+ DESCRIPTION 'Teradata PT UPDATE OPERATOR'
+ TYPE UPDATE SCHEMA *
+ ATTRIBUTES
+ (
+VARCHAR TdpId = '127.0.0.1',
+VARCHAR UserName = 'test',
+VARCHAR UserPassword = 'test',
+VARCHAR AccountID,
+VARCHAR ARRAY TargetTable=['vendor1','vendor2','vendor3'],
+VARCHAR ARRAY ErrorTable,
+VARCHAR ARRAY WorkTable,
+VARCHAR LogTable = 'Three_Tables_Log',
+VARCHAR PrivateLogName = 'vendor_load_multiple_tables',
+VARCHAR WorkingDatabase,
+VARCHAR AmpCheck
+);
+
+DEFINE SCHEMA PRODUCT_SOURCE_SCHEMA
+DESCRIPTION 'PRODUCT INFORMATION SCHEMA'
+ (
+ vendor_id number,
+ vendor_name varchar(20),
+ vendor_address varchar(100),
+ product_id number 
+);
+
+/*DEFINE OPERATOR FILE_READER_VENDOR
+TYPE DATACONNECTOR PRODUCER
+SCHEMA PRODUCT_SOURCE_SCHEMA
+ATTRIBUTES
+(
+ VARCHAR DirectoryPath = './',
+ VARCHAR FileName = 'vendor_data_mload',
+ VARCHAR Format = 'delimited',
+ VARCHAR TextDelimiter = ',',
+ VARCHAR IndicatorMode= 'N',
+ VARCHAR OpenMode = 'Read'
+);
+*/
+
+DEFINE OPERATOR EXPORT_OPERATOR()
+ DESCRIPTION 'EXPORT OPERATOR'
+ TYPE EXPORT
+ SCHEMA PRODUCT_SOURCE_SCHEMA
+ ATTRIBUTES
+ (
+ VARCHAR PrivateLogName =
+'export_op_log',
+ INTEGER Blocksize = 64260,
+INTEGER TenacityHours = 1,
+ INTEGER TenacitySleep = 1,
+ INTEGER MaxSessions = 4,
+ INTEGER MinSessions = 1,
+ VARCHAR TdpId = '127.0.0.1',
+ VARCHAR DateForm = 'INTEGERDATE',
+ VARCHAR UserName = 'test',
+ VARCHAR UserPassword = 'test',
+ VARCHAR AccountID,
+VARCHAR WorkingDatabase,
+ VARCHAR SelectStmt = 'sel *
+ from test.vendor 
+ where vendor_id > 5000 and
+ vendor_id < 20000;'
+ );
+ 
+DEFINE OPERATOR SQL_SELECTOR ()
+ DESCRIPTION 'SQL OPERATOR'
+ TYPE SELECTOR
+ SCHEMA PRODUCT_SOURCE_SCHEMA
+ ATTRIBUTES
+ (
+ VARCHAR UserName ='test',
+ VARCHAR PrivateLogName ='vendor_table_select_log',
+ VARCHAR UserPassword = 'test',
+ VARCHAR TdpId = '127.0.0.1',
+ VARCHAR AccountID = '',
+ VARCHAR SelectStmt = 'select * from test.vendor where vendor_id < 5001;'
+ );
+ 
+APPLY
+CASE
+ WHEN (vendor_id > 0 and vendor_id < 5000) THEN
+ 'INSERT INTO test.vendor1 ( :vendor_id,
+ :vendor_name,
+ :vendor_address,
+ :product_id 
+);
+ ' IGNORE DUPLICATE INSERT ROWS
+ WHEN (vendor_id > 5000 and vendor_id < 15000) THEN
+ 'INSERT INTO test.vendor2 ( :vendor_id,
+ :vendor_name,
+ :vendor_address,
+ :product_id 
+ );
+ ' IGNORE DUPLICATE INSERT ROWS
+ WHEN (vendor_id > 15000 ) THEN
+ 'INSERT INTO test.vendor3 ( :vendor_id,
+ :vendor_name,
+ :vendor_address,
+ :product_id
+ );
+ ' IGNORE DUPLICATE INSERT ROWS
+END
+TO OPERATOR (UPDATE_OPERATOR () [2])
+/*SELECT * FROM OPERATOR (FILE_READER_VENDOR);
+ UNION ALL*/
+SELECT * FROM OPERATOR (EXPORT_OPERATOR () )
+ UNION ALL
+SELECT * FROM OPERATOR (SQL_SELECTOR () );
+);
