@@ -1,5 +1,5 @@
 DEFINE JOB Import_Vendor_Data
-Description 'Test fastload script'
+Description 'Test Stream script'
 (
     DEFINE OPERATOR Vendor_Table_Detail
     TYPE STREAM
@@ -32,8 +32,7 @@ Description 'Test fastload script'
         VARCHAR DirectoryPath='./',
         VARCHAR FileName='vendor_unformatted.out',
         VARCHAR Format='UNFORMATTED',
-        VARCHAR OpenMode='Read',
-        VARCHAR DateForm='AnsiDate'
+        VARCHAR OpenMode='Read'
     );
     
     APPLY
