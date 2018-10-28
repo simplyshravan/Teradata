@@ -1,0 +1,67 @@
+DEFINE JOB Import_Vendor_Data
+Description 'Test fastload script'
+(
+    DEFINE OPERATOR Vendor_Table_Detail
+    TYPE STREAM
+    SCHEMA *
+    ATTRIBUTES
+    (
+        VARCHAR TdPid='127.0.0.1',
+        VARCHAR UserName='test',
+        VARCHAR UserPassWord='test',
+        VARCHAR TargetDatabase='test',
+        VARCHAR TargetTable='vendor',
+        VARCHAR LogTable='vendor_lg',
+        VARCHAR DateForm='AnsiDate',
+        INTEGER MaxSessions=6
+    );
+    
+    DEFINE SCHEMA Define_Vendor_Schema
+    (
+        vendor_id NUMBER,
+        vendor_name VARCHAR(20),
+        vendor_address Varchar(100),
+	product_id NUMBER
+    );
+
+    DEFINE OPERATOR Vendor_File_Detail
+    TYPE DATACONNECTOR PRODUCER
+    SCHEMA Define_Vendor_Schema
+    ATTRIBUTES
+    (
+        VARCHAR DirectoryPath='./',
+        VARCHAR FileName='vendor_unformatted.out',
+        VARCHAR Format='UNFORMATTED',
+        VARCHAR OpenMode='Read',
+        VARCHAR DateForm='AnsiDate'
+    );
+    
+    APPLY
+    CASE
+    WHEN (vendor_id > 0 and vendor_id < 5000) THEN
+    'INSERT INTO test.vendor ( :vendor_id,
+    :vendor_name,
+    :vendor_address,
+    :product_id 
+    );
+    ' IGNORE DUPLICATE INSERT ROWS
+    WHEN (vendor_id > 5000 and vendor_id < 15000) THEN
+    'INSERT INTO test.vendor_1 ( :vendor_id,
+     :vendor_name,
+     :vendor_address,
+     :product_id 
+   );
+    ' IGNORE DUPLICATE INSERT ROWS
+   WHEN (vendor_id > 15000 ) THEN
+   'INSERT INTO test.vendor_2 ( :vendor_id,
+   :vendor_name,
+   :vendor_address,
+   :product_id
+   );
+   ' IGNORE DUPLICATE INSERT ROWS
+   END
+    TO OPERATOR(Vendor_Table_Detail)
+    
+    SELECT * FROM OPERATOR (Vendor_File_Detail);
+);
+
