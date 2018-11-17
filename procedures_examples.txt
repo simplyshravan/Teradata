@@ -1,0 +1,147 @@
+---------------------------------------------------------------------------
+Simple procecdure
+---------------------------------------------------------------------------
+CREATE MULTISET VOLATILE TABLE US_STATES , NO JOURNAL, NO LOG,NO FALLBACK
+(
+STATE_NAME VARCHAR(13),
+STATE_ABBR CHAR(2),
+STATE_CAPITAL VARCHAR(13),
+STATE_CITY VARCHAR(13)
+)
+PRIMARY INDEX(STATE_NAME)
+ON COMMIT PRESERVE ROWS
+;
+
+CREATE PROCEDURE US_STATE_1 ()
+BEGIN
+INSERT INTO US_STATES VALUES('Alabama','AL','Montgomery','Birmingham');
+INSERT INTO US_STATES VALUES('Alaska','AK','Juneau','Anchorage');
+INSERT INTO US_STATES VALUES('Arizona','AZ','Phoenix','Phoenix');
+INSERT INTO US_STATES VALUES('Arkansas','AR','LittleRock','LittleRock');
+INSERT INTO US_STATES VALUES('California','CA','Sacramento','LosAngeles');
+END;
+
+CALL US_STATE_1();
+-----------------------------------------------------------------------------
+Procedure with Input parameters
+-----------------------------------------------------------------------------
+CREATE PROCEDURE InsertSalary ( 
+   IN in_EmployeeNo INTEGER, IN in_Gross INTEGER, 
+   IN in_Deduction INTEGER, IN in_NetPay INTEGER 
+) 
+BEGIN 
+   INSERT INTO Salary ( 
+      EmployeeNo, 
+      Gross, 
+      Deduction, 
+      NetPay 
+   ) 
+   VALUES ( 
+      :in_EmployeeNo, 
+      :in_Gross, 
+      :in_Deduction, 
+      :in_NetPay 
+   ); 
+END;
+
+call InsertSalary(123,10000,100,9900)
+
+--------------------------------------------------------------------------------
+Procedure with Out variable and Exception Handling
+--------------------------------------------------------------------------------
+
+REPLACE PROCEDURE tutorial_user.sample_procedure(out return_code Varchar(20))
+BEGIN
+
+   /* Variable declaration */
+   DECLARE lv_proc_step VARCHAR(1000);
+   DECLARE lv_proc_name VARCHAR(50) DEFAULT 'sample_procedure';
+   
+   /* Continue Handler for Table does not exist */
+   DECLARE CONTINUE HANDLER FOR SQLSTATE '42000'  
+   BEGIN 
+     /* Even if Drop table fails,continue to the next step*/
+   END; 
+
+  /* Exit Handler for any SQL exception other than table does not exist */
+   DECLARE EXIT HANDLER FOR SQLEXCEPTION
+   BEGIN
+        ROLLBACK;
+        SET return_code = 'ERROR';
+        INSERT INTO tutorial_db.runtime_error
+        ( session_nr,
+          procedure_name,
+          proc_step_txt,
+          error_cd
+        )
+        VALUES
+        (
+          SESSION,
+          lv_proc_name,
+          lv_proc_step,
+          SQLCODE
+        );
+
+   END;
+
+ SET return_code='Running';
+
+   SET lv_proc_step='Dropping table';
+   DROP TABLE tutorial_db.department;
+
+
+   SET lv_proc_step='Creating table';
+   CREATE MULTISET TABLE tutorial_db.department
+   (
+     dept_no INTEGER,
+     department_name VARCHAR(30),
+     loc_name  VARCHAR(30)
+   )
+   PRIMARY INDEX(dept_no);
+
+
+   SET lv_proc_step='Inserting data into table';
+   INSERT INTO tutorial_db.department VALUES(100, 'ACCOUNTS', 'JAIPUR');
+   INSERT INTO tutorial_db.department VALUES(200, 'R & D', 'NEW DELHI');
+   INSERT INTO tutorial_db.department VALUES(300, 'SALES', 'BENGALURU');
+   INSERT INTO tutorial_db.department VALUES(400, 'INFORMATION TECHNOLOGY', 'BHUBANESWAR');
+
+
+ SET return_code='Success';
+
+END; 
+
+call tutorial_user.sample_procedure(A);
+----------------------------------------------------------------------------------------------
+Procedure with Cursors/ Dynamic PROCEDURE
+----------------------------------------------------------------------------------------------
+REPLACE PROCEDURE tutorial_user.sample_dynamic_proc(IN optionv INT)
+DYNAMIC RESULT SETS 1
+
+BEGIN
+
+/* Declaring dynamic cursor to get output as resultset  */
+    DECLARE select_1 CURSOR WITH RETURN ONLY TO CLIENT FOR
+    SELECT session;
+    
+    DECLARE select_2 CURSOR WITH RETURN ONLY TO CLIENT FOR
+    SELECT database;
+    
+    DECLARE select_3 CURSOR WITH RETURN ONLY TO CLIENT FOR
+    SELECT User;
+    
+    DECLARE select_4 CURSOR WITH RETURN ONLY TO CLIENT FOR
+    SELECT * from tutorial_db.department;
+    
+/* Opening dynamic cursor using passed parameter */
+    CASE optionv
+    WHEN 1 THEN OPEN select_1;
+    WHEN 2 THEN OPEN select_2;
+    WHEN 3 THEN OPEN select_3;
+    ELSE OPEN select_4;
+    END CASE;
+  
+END;
+
+call tutorial_user.sample_dynamic_proc(4);
+----------------------------------------------------------------------------------------------

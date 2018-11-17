@@ -1,0 +1,2 @@
+SELECT split_d.* FROM TABLE (STRTOK_SPLIT_TO_TABLE(1,'PradeeepZKhatriZJaipur','Z')
+RETURNS (outkey INTEGER, tokennum INTEGER, result_string VARCHAR(20) CHARACTER SET LATIN) ) as split_d order by 1,2;
