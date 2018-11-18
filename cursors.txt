@@ -1,0 +1,165 @@
+----------------------------------------------------------------------------------------------
+Cursor basic example
+----------------------------------------------------------------------------------------------
+REPLACE PROCEDURE CURSOR_SAMPLE  ( OUT m INTEGER )
+BEGIN
+DECLARE c, n INTEGER DEFAULT 0;
+DECLARE cursor_name CURSOR FOR SELECT col1 FROM TABLE_NAME  ORDER BY 1;
+
+OPEN cursor_name;
+
+label1:
+
+LOOP
+FETCH cursor_name INTO c;
+IF (SQLSTATE = '02000') THEN
+  LEAVE label1;
+END IF;
+SET n = n + c;
+
+END LOOP label1;
+CLOSE cursor_name;
+SET m = n;
+
+END;
+
+CALL CURSOR_SAMPLE  (x);
+
+----------------------------------------------------------------------------------------------
+Cursor with dynamic query
+----------------------------------------------------------------------------------------------
+
+REPLACE  PROCEDURE CURSOR_SAMPLE   (IN  m INTEGER)
+BEGIN
+DECLARE n INTEGER DEFAULT 0;
+DECLARE my_sql VARCHAR(1000);
+DECLARE cursor_name NO SCROLL CURSOR  FOR  my_statement;
+
+SET my_sql =  'SELECT col1 FROM TABLE_NAME WHERE col1 = ' || m || ';';
+
+PREPARE my_statement from my_sql;
+OPEN cursor_name;
+
+END;
+
+CALL CURSOR_SAMPLE  (2);
+
+----------------------------------------------------------------------------------------------
+CURSOR FOR UPDATE
+----------------------------------------------------------------------------------------------
+ declare c1 cursor for
+  select * from  Employees  FOR UPDATE;
+a number :=0 ; 
+begin
+for x in c1 
+loop
+   a := a +1 ; 
+    update  employees  set salary = a  where current of c1;
+end loop;
+end;
+----------------------------------------------------------------------------------------------
+CURSOR calling procedure which is returning cursor
+----------------------------------------------------------------------------------------------
+CREATE PROCEDURE spOpenIssues 
+  DYNAMIC RESULT SETS 1
+BEGIN
+  DECLARE cur CURSOR WITH RETURN FOR
+    SELECT id, name FROM issues;
+  OPEN cur;
+END;
+-----------------------------------------
+DECLARE id INT;
+DECLARE name VARCHAR(30);
+CALL spOpenIssues;
+ALLOCATE c1 CURSOR FOR PROCEDURE spOpenIssues;
+FETCH c1 INTO id, name;
+WHILE (SQLCODE = 0)
+DO
+  PRINT id || ' - ' || name;
+  FETCH c1 INTO id, name;
+END WHILE;
+CLOSE c1;
+----------------------------------------------------------------------------------------------
+Dynamic result set 2 with 2 cursors
+----------------------------------------------------------------------------------------------
+CREATE PROCEDURE spOpenIssues2 
+  DYNAMIC RESULT SETS 2
+BEGIN
+  DECLARE cur CURSOR WITH RETURN FOR
+    SELECT id, name FROM issues;
+  DECLARE cur2 CURSOR WITH RETURN FOR
+    SELECT id, name FROM issues_hold;
+  OPEN cur;
+  OPEN cur2;
+END;
+-----------------------------------------
+DECLARE id INT;
+DECLARE name VARCHAR(30);
+ 
+CALL spOpenIssues2;
+ 
+-- First result set
+ALLOCATE c1 CURSOR FOR PROCEDURE spOpenIssues2;
+FETCH c1 INTO id, name;
+WHILE (SQLCODE = 0)
+DO
+  -- ... 
+  FETCH c1 INTO id, name;
+END WHILE;
+CLOSE c1;
+ 
+-- Second result set
+ALLOCATE c2 CURSOR FOR PROCEDURE spOpenIssues2;
+FETCH c2 INTO id, name;
+WHILE (SQLCODE = 0)
+DO
+  -- ... 
+  FETCH c2 INTO id, name;
+END WHILE;
+CLOSE c2;
+----------------------------------------------------------------------------------------------
+Use of first and next
+----------------------------------------------------------------------------------------------
+REPLACE PROCEDURE alloc007()
+DYNAMIC RESULT SETS 1
+BEGIN
+    DECLARE EmpNo0  SMALLINT;
+    DECLARE ProjId0 CHAR(8);
+    DECLARE WkEnd0  DATE;
+    DECLARE Hours0  DECIMAL(4,1);
+    DECLARE ee0 CHAR(8);
+    DECLARE ff0 VARCHAR(25);
+    DECLARE gg0 DATE;
+    DECLARE hh0 DATE;
+    DECLARE ii0 DATE;
+    CALL drs_temp5();
+    ALLOCATE my_fetch CURSOR FOR PROCEDURE drs_temp5;
+    FETCH FIRST FROM my_fetch INTO empno0,projid0,wkend0,hours0;
+    INSERT INTO charges_temp2(empno0,projid0,wkend0,hours0);
+    WHILE (SQLCODE = 0)
+    DO
+        FETCH NEXT FROM my_fetch INTO empno0,projid0,wkend0,hours0;
+        IF (SQLCODE = 0)
+        THEN
+            INSERT INTO charges_temp2(empno0,projid0,wkend0,hours0);
+        END IF;
+    END WHILE;
+    -- close the current result set cursor
+    CLOSE my_fetch;
+    -- see if there are result sets
+    WHILE (SQLSTATE = '0100D')
+    DO
+        -- allocate the next one.
+        ALLOCATE sp2 CURSOR FOR PROCEDURE drs_temp5;
+        WHILE (SQLCODE = 0)
+        DO
+            FETCH NEXT FROM sp2 into ee0,ff0,gg0,hh0,ii0;
+            IF (SQLCODE = 0)
+            THEN
+                INSERT INTO project_temp1(ee0,ff0,gg0,hh0,ii0);
+            END IF;
+        END WHILE;
+        CLOSE sp2;
+    END WHILE;
+END;
+----------------------------------------------------------------------------------------------
