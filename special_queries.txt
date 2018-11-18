@@ -1,2 +1,38 @@
 SELECT split_d.* FROM TABLE (STRTOK_SPLIT_TO_TABLE(1,'PradeeepZKhatriZJaipur','Z')
 RETURNS (outkey INTEGER, tokennum INTEGER, result_string VARCHAR(20) CHARACTER SET LATIN) ) as split_d order by 1,2;
+----------------------------------------------------------------------------------------------------------------------
+SELECT split_d.* from table(REGEXP_SPLIT_TO_TABLE('City','Jaipur&Bangalore&Bhubaneswar','&','c')
+returns (outkey varchar(30), token INTEGER, result_string varchar(100))) as split_d;
+----------------------------------------------------------------------------------------------------------------------
+SELECT split_d.* from table( REGEXP_SPLIT_TO_TABLE(3, 'If23232you452correct5532your577mind235then6878rest131of7897life3448will078fall123into4356place.', '[0-9]', 'c')
+returns (outkey INTEGER,token INTEGER,result_string VARCHAR(100) CHARACTER SET LATIN)) as split_d;
+----------------------------------------------------------------------------------------------------------------------
+SELECT split_d.* from table( REGEXP_SPLIT_TO_TABLE( 3, 'If23232you452correct5532your577mind235then6878rest131of7897life3448will078fall123into4356place.', '[0-9][0-9][0-9]', 'c')
+returns (outkey INTEGER,token INTEGER,result_string VARCHAR(100) CHARACTER SET LATIN)) as split_d;
+----------------------------------------------------------------------------------------------------------------------
+SELECT split_d.* from table( REGEXP_SPLIT_TO_TABLE(3, 'If23232you452correct5532your577mind235then6878rest131of7897life3448will078fall123into4356place.', '[0-9]*', 'c')
+returns (outkey INTEGER,token INTEGER,res VARCHAR(100) CHARACTER SET LATIN)) as split_d;
+----------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------
+WITH delimi as (SELECT 'Teradata|Vertica|Oracle' as param)
+SELECT * FROM TABLE (CSVLD(CAST(delimi.param AS VARCHAR(100)), '|', '"')
+RETURNS (col1 varchar(100) character set UNICODE, col2 varchar(100) character set UNICODE, col3 varchar(100)character set UNICODE)) as T1;
+----------------------------------------------------------------------------------------------------------------------
+CREATE MULTISET VOLATILE TABLE csv_example
+ (
+  id INTEGER,
+  col1 VARCHAR(10),
+  col2 VARCHAR(10),
+  col3 VARCHAR(10),
+  col4 DATE,
+  col5 INTEGER
+)
+ PRIMARY INDEX(id)
+ON COMMIT PRESERVE ROWS;
+
+INSERT INTO csv_example(1,'Teradata','Vertica','Oracle',CURRENT_DATE,100);
+INSERT INTO csv_example(2,'Spark','Hive','Flume',CURRENT_DATE,100);
+
+SELECT * FROM TABLE(CSV(NEW VARIANT_TYPE(csv_example.col1,csv_example.col2,csv_example.col3,csv_example.col4,csv_example.col5),',','"') 
+RETURNS (Technologies varchar(100) character set LATIN)) as t1;
+----------------------------------------------------------------------------------------------------------------------
