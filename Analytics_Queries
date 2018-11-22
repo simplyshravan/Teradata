@@ -1,0 +1,14 @@
+Top/Bottom N query
+1. Top/Bottom 5 products sold in each region
+2. Top/Bottom 5 prodcuts sold in each category
+3. Top/Bottom 5 regions in terms of number of items sold
+4. Top/Bottom 5 regions in terms of money purchased
+5. Month wise Top/Bottom 2 users in terms of buying number of items
+6. Month wise Top/Bottom 2 users in terms of money spent
+7. Top/Bottom 3 users of year in terms of money spent
+8. Top/Bottom 3 users of year in terms of items purchased
+
+
+A. Arrange the peak time in terms of hour of the day when the maximum number of orders are placed.(24 hours in a day)
+B. Arrange the peak time in terms of day of the week when the maximum number of orders are placed.(7 days in a week)
+
