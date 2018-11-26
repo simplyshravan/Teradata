@@ -12,3 +12,5 @@ Top/Bottom N query
 A. Arrange the peak time in terms of hour of the day when the maximum number of orders are placed.(24 hours in a day)
 B. Arrange the peak time in terms of day of the week when the maximum number of orders are placed.(7 days in a week)
 C. Which 2 products are buoght together most of the time. Extract top 3 pairs.
+D. Count each alphabet occurrence in a paragraph.
+E. Count each word occurrence in a paragraph.
