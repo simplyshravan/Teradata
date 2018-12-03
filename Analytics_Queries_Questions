@@ -14,3 +14,12 @@ B. Arrange the peak time in terms of day of the week when the maximum number of 
 C. Which 2 products are buoght together most of the time. Extract top 3 pairs.
 D. Count each alphabet occurrence in a paragraph.
 E. Count each word occurrence in a paragraph.
+F. Pivot one data set and then unpivot same data set.
+G. User sentiment analysis:- 
+  a. Give the 12 months in order of items bought by the user. 
+  b. Give the 12 months in order of orders placed by the user. 
+It will give us the activity of user among all months in a year. 
+H. Give the top 5 active users in last week who have ordered maximum items.
+Similarly we can extract the activity on weekly basis.
+
+
